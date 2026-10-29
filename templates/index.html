@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select and Upload Images</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: center;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 15px;
+            max-width: 90%;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            transition: transform 0.2s, border-color 0.3s;
+        }
+
+        .scroll-container img:hover {
+            transform: scale(1.1);
+        }
+
+        .selected {
+            border-color: #00e676;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .preview {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .preview img {
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 10px;
+            border: 4px solid #fff;
+            margin-top: 10px;
+        }
+
+        .preview h3 {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #00bfa5;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #009688;
+            transform: translateY(-5px);
+        }
+
+        .visible {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body>
+    <h2>Select Dress Image from the Grid</h2>
+    <div class="scroll-container">
+        {% for image in grid_images %}
+        <img src="{{ url_for('serve_image', filename= image) }}" 
+             onclick="selectImage(this, 'dress')" 
+             alt="Dress Image" 
+             style="width: 100px; height: auto;">
+        {% endfor %}
+    </div>
+
+    <h2>Select Person Image from the Grid</h2>
+    <div class="scroll-container">
+        {% for image in person_images %}
+        <img src="{{ url_for('serve_pimages', filename= image) }}" 
+             onclick="selectImage(this, 'person')" 
+             alt="Person Image" 
+             style="width: 100px; height: auto;">
+        {% endfor %}
+    </div>
+
+    <div class="preview-container">
+        <!-- Display selected dress image -->
+        <div class="preview" id="selected-dress-preview">
+            <h3>Selected Dress Image:</h3>
+            <img id="selected-dress-image" src="" alt="Selected Dress Image">
+        </div>
+
+        <!-- Display selected person image -->
+        <div class="preview" id="selected-person-preview">
+            <h3>Selected Person Image:</h3>
+            <img id="selected-person-image" src="" alt="Selected Person Image">
+        </div>
+    </div>
+
+    <!-- Form for uploading an image -->
+    <form id="upload-form" action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="selected_image" id="selected-dress-input">
+        <input type="hidden" name="person_image" id="selected-person-input">
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        // Function to handle selecting an image from the grid
+        function selectImage(imgElement, type) {
+            const selectedImageSrc = imgElement.src;
+            
+            if (type === 'dress') {
+                const selectedDressImage = document.getElementById('selected-dress-image');
+                const selectedDressPreview = document.getElementById('selected-dress-preview');
+                
+                selectedDressImage.src = selectedImageSrc;
+                selectedDressPreview.classList.add('visible');
+
+                document.getElementById('selected-dress-input').value = selectedImageSrc.split('/').pop();
+            } else if (type === 'person') {
+                const selectedPersonImage = document.getElementById('selected-person-image');
+                const selectedPersonPreview = document.getElementById('selected-person-preview');
+                
+                selectedPersonImage.src = selectedImageSrc;
+                selectedPersonPreview.classList.add('visible');
+
+                document.getElementById('selected-person-input').value = selectedImageSrc.split('/').pop();
+            }
+
+            document.querySelectorAll('.scroll-container img').forEach(img => img.classList.remove('selected'));
+            imgElement.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Install a compatible CUDA torch/torchvision pair separately.
+# Dependency list inferred from imports; not a validated lock file.
+numpy
+Pillow
+opencv-python
+torchgeometry==0.1.2
+Flask
+flask-ngrok
+pyngrok
+scikit-image
+lpips
+pytorch-fid
